@@ -9,7 +9,6 @@ import { PokemonModule } from './pokemon/pokemon.module';
   imports: [
     TypeOrmModule.forRoot({
       ...databaseConfig,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     PokemonModule,
   ],

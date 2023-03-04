@@ -1,7 +1,8 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from './../src/app.module';
+import { CreatePokemonDto } from 'src/pokemon/dto/create-pokemon.dto';
 import * as request from 'supertest';
+import { AppModule } from './../src/app.module';
 
 describe('PokemonController (e2e)', () => {
   let app: INestApplication;
@@ -13,6 +14,7 @@ describe('PokemonController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -67,5 +69,20 @@ describe('PokemonController (e2e)', () => {
     );
 
     expect(response.status).toBe(204);
+  });
+
+  it('should throw an error when creating a pokemon with invalid data', async () => {
+    const invalidDto: CreatePokemonDto = {
+      name: '',
+      type: '',
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/pokemon')
+      .send(invalidDto)
+      .expect(400);
+
+    expect(response.body.message).toContain('name should not be empty');
+    expect(response.body.message).toContain('type should not be empty');
   });
 });

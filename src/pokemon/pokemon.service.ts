@@ -8,12 +8,12 @@ import { PokemonRepository } from './repositories/pokemon.repository';
 @Injectable()
 export class PokemonService {
   constructor(
-    @InjectRepository(PokemonRepository)
+    @InjectRepository(Pokemon)
     private pokemonRepository: PokemonRepository,
   ) {}
 
-  async create(pokemon: CreatePokemonDto): Promise<Pokemon> {
-    return this.pokemonRepository.save(pokemon);
+  async create(input: CreatePokemonDto): Promise<Pokemon> {
+    return this.pokemonRepository.save(input);
   }
 
   async findAll(): Promise<Pokemon[]> {
@@ -26,8 +26,14 @@ export class PokemonService {
     });
   }
 
-  async update(id: number, pokemon: UpdatePokemonDto): Promise<void> {
-    await this.pokemonRepository.update(id, pokemon);
+  async update(id: number, input: UpdatePokemonDto): Promise<Pokemon> {
+    const pokemon = await this.pokemonRepository.findOne({
+      where: { id },
+    });
+    return await this.pokemonRepository.save({
+      ...pokemon,
+      ...input,
+    });
   }
 
   async remove(id: number): Promise<void> {

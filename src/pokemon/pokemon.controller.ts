@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  HttpCode,
 } from '@nestjs/common';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
@@ -35,11 +36,12 @@ export class PokemonController {
   update(
     @Param('id') id: string,
     @Body() pokemon: UpdatePokemonDto,
-  ): Promise<void> {
+  ): Promise<Pokemon> {
     return this.pokemonService.update(Number(id), pokemon);
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: string): Promise<void> {
     return this.pokemonService.remove(Number(id));
   }

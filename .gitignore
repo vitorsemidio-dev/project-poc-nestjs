@@ -44,4 +44,7 @@ lerna-debug.log*
 coverage
 
 # Upload
-uploads
+uploads/*
+!uploads/.gitkeep
+tmp/*
+!tmp/.gitkeep

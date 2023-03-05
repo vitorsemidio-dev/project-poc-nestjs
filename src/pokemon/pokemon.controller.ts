@@ -70,7 +70,7 @@ export class PokemonController {
   async upload(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<any> {
+  ): Promise<Pokemon> {
     const path = file.path;
     return this.pokemonService.saveAvatar(Number(id), path);
   }

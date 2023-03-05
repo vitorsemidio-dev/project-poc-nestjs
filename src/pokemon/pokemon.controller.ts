@@ -7,10 +7,16 @@ import {
   Body,
   Param,
   HttpCode,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { ImagemUploadSchema } from './dto/upload-image-pokemon.schema';
 import { Pokemon } from './entities/pokemon.entity';
+import { uploadMiddleware } from '../middlewares/upload-middleware';
 import { PokemonService } from './pokemon.service';
 
 @Controller('pokemon')
@@ -44,5 +50,24 @@ export class PokemonController {
   @HttpCode(204)
   remove(@Param('id') id: string): Promise<void> {
     return this.pokemonService.remove(Number(id));
+  }
+
+  @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Corpo da solicitação para upload de imagem.',
+    schema: ImagemUploadSchema,
+  })
+  @UseInterceptors(
+    FileInterceptor(
+      'imagem',
+      uploadMiddleware({
+        limits: { fileSize: 5 * 1024 * 1024 },
+        allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif'],
+      }),
+    ),
+  )
+  async upload(@UploadedFile() file: Express.Multer.File): Promise<any> {
+    return file;
   }
 }

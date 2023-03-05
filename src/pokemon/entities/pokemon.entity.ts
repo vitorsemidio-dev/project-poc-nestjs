@@ -10,4 +10,7 @@ export class Pokemon {
 
   @Column()
   type: string;
+
+  @Column({ nullable: true })
+  avatar: string;
 }

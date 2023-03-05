@@ -52,7 +52,7 @@ export class PokemonController {
     return this.pokemonService.remove(Number(id));
   }
 
-  @Post('upload')
+  @Post(':id/upload')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Corpo da solicitação para upload de imagem.',
@@ -67,7 +67,11 @@ export class PokemonController {
       }),
     ),
   )
-  async upload(@UploadedFile() file: Express.Multer.File): Promise<any> {
-    return file;
+  async upload(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<any> {
+    const path = file.path;
+    return this.pokemonService.saveAvatar(Number(id), path);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
@@ -38,5 +38,18 @@ export class PokemonService {
 
   async remove(id: number): Promise<void> {
     await this.pokemonRepository.delete(id);
+  }
+
+  async saveAvatar(id: number, avatar: string): Promise<Pokemon> {
+    const pokemon = await this.pokemonRepository.findOne({
+      where: { id },
+    });
+    if (!pokemon) {
+      throw new NotFoundException('Pokemon not found');
+    }
+    return await this.pokemonRepository.save({
+      ...pokemon,
+      avatar,
+    });
   }
 }

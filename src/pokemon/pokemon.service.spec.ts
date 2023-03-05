@@ -132,4 +132,40 @@ describe('PokemonService', () => {
       expect(repository.delete).toHaveBeenCalledWith(1);
     });
   });
+
+  describe('saveAvatar', () => {
+    it('should save pokemon avatar', async () => {
+      const pokemon = new Pokemon();
+      pokemon.id = 1;
+      pokemon.name = 'Pikachu';
+      pokemon.type = 'Electric';
+      const avatarPath = './uploads/avatar.png';
+
+      jest.spyOn(repository, 'findOne').mockResolvedValue(pokemon);
+      jest.spyOn(repository, 'save').mockResolvedValue({
+        ...pokemon,
+        avatar: avatarPath,
+      });
+
+      await service.saveAvatar(1, avatarPath);
+      expect(repository.save).toHaveBeenCalledWith({
+        ...pokemon,
+        avatar: avatarPath,
+      });
+    });
+
+    it('should throw an error if pokemon does not exist', async () => {
+      const pokemon = new Pokemon();
+      pokemon.id = 1;
+      pokemon.name = 'Pikachu';
+      pokemon.type = 'Electric';
+      const avatarPath = './uploads/avatar.png';
+
+      jest.spyOn(repository, 'findOne').mockResolvedValue(undefined);
+
+      await expect(service.saveAvatar(1, avatarPath)).rejects.toThrow(
+        'Pokemon not found',
+      );
+    });
+  });
 });

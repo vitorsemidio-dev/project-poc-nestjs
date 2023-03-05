@@ -12,5 +12,5 @@ export class Pokemon {
   type: string;
 
   @Column({ nullable: true })
-  avatar: string;
+  avatar?: string;
 }

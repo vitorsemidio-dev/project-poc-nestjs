@@ -40,7 +40,7 @@ export class PokemonService {
     await this.pokemonRepository.delete(id);
   }
 
-  async saveAvatar(id: number, avatar: string): Promise<Pokemon> {
+  async saveAvatar(id: number, avatarPath: string): Promise<Pokemon> {
     const pokemon = await this.pokemonRepository.findOne({
       where: { id },
     });
@@ -49,7 +49,7 @@ export class PokemonService {
     }
     return await this.pokemonRepository.save({
       ...pokemon,
-      avatar,
+      avatar: avatarPath,
     });
   }
 }

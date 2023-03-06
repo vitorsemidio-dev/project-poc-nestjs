@@ -1,0 +1,6 @@
+export const MOCK_PERMISSIONS = [
+  'CONTAS_A_PAGAR',
+  'CONTAS_A_RECEBER',
+  'PEDIDOS_DE_COMPRA',
+  'RECEBIMENTO_DE_COMPRA',
+] as const;

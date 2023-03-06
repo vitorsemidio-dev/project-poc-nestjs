@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Readable } from 'stream';
-import { CreatePokemonDto } from './dto/create-pokemon.dto';
-import { UpdatePokemonDto } from './dto/update-pokemon.dto';
-import { Pokemon } from './entities/pokemon.entity';
-import { PokemonController } from './pokemon.controller';
-import { PokemonService } from './pokemon.service';
-import { PokemonRepository } from './repositories/pokemon.repository';
+import { CreatePokemonDto } from 'src/pokemon/dto/create-pokemon.dto';
+import { UpdatePokemonDto } from 'src/pokemon/dto/update-pokemon.dto';
+import { Pokemon } from 'src/pokemon/entities/pokemon.entity';
+import { PokemonController } from 'src/pokemon/pokemon.controller';
+import { PokemonService } from 'src/pokemon/pokemon.service';
+import { PokemonRepository } from 'src/pokemon/repositories/pokemon.repository';
 
 const makePokemon = (override: Partial<Pokemon> = {}): Pokemon => {
   return {

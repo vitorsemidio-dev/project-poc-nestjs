@@ -1,23 +1,23 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpCode,
-  UseInterceptors,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { CreatePokemonDto } from './dto/create-pokemon.dto';
-import { UpdatePokemonDto } from './dto/update-pokemon.dto';
-import { ImagemUploadSchema } from './dto/upload-image-pokemon.schema';
-import { Pokemon } from './entities/pokemon.entity';
-import { uploadMiddleware } from '../middlewares/upload-middleware';
-import { PokemonService } from './pokemon.service';
+import { uploadMiddleware } from 'src/middlewares/upload-middleware';
+import { CreatePokemonDto } from 'src/pokemon/dto/create-pokemon.dto';
+import { UpdatePokemonDto } from 'src/pokemon/dto/update-pokemon.dto';
+import { ImagemUploadSchema } from 'src/pokemon/dto/upload-image-pokemon.schema';
+import { Pokemon } from 'src/pokemon/entities/pokemon.entity';
+import { PokemonService } from 'src/pokemon/pokemon.service';
 
 @Controller('pokemon')
 export class PokemonController {

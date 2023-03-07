@@ -154,7 +154,7 @@ describe('ACL - removing permissions to roles', () => {
     const aclWithPermissions = new RBAC([roleWithPermissions]);
     return {
       roleWithPermissions,
-      userWithRoles: userWithRoles,
+      userWithRoles,
       aclWithPermissions,
     };
   };
@@ -218,13 +218,40 @@ describe('ACL - removing permissions to roles', () => {
     expect(outputAfter).toBe(false);
   });
 
-  it('should be able to remove all permissions from role', async () => {
+  it('should be able to remove all permissions from role one by one', async () => {
     const { roleWithPermissions, userWithRoles, aclWithPermissions } =
       makeSut();
 
     roleWithPermissions.removePermission(PERMISSIONS.updateUsers);
     roleWithPermissions.removePermission(PERMISSIONS.readUsers);
     roleWithPermissions.removePermission(PERMISSIONS.deleteUsers);
+    const outputWithoutUpdatePermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+    const outputWithoutDeletePermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+    const outputWithoutReadPermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+
+    expect(outputWithoutUpdatePermission).toBe(false);
+    expect(outputWithoutDeletePermission).toBe(false);
+    expect(outputWithoutReadPermission).toBe(false);
+    expect(roleWithPermissions.permissions.length).toBe(0);
+  });
+
+  it('should be able to remove all permissions from role at same time', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    roleWithPermissions.cleanPermissions();
     const outputWithoutUpdatePermission = aclWithPermissions.canAccess(
       userWithRoles,
       '/users/123',

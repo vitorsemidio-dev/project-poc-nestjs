@@ -32,6 +32,7 @@ export interface IRole {
   permissions: Permission[];
   addPermission(permission: Permission): void;
   removePermission(permission: Permission): void;
+  cleanPermissions(): void;
 }
 
 type RoleProps = {
@@ -55,6 +56,10 @@ export class Role implements IRole {
 
   removePermission(permission: Permission): void {
     this.permissions = this.permissions.filter((p) => p.id !== permission.id);
+  }
+
+  cleanPermissions(): void {
+    this.permissions = [];
   }
 }
 

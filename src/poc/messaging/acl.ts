@@ -56,6 +56,7 @@ const adminRole: Role = {
     { id: 2, name: 'read', resource: '/users', method: 'GET' },
     { id: 3, name: 'update', resource: '/users/*', method: 'PUT' },
     { id: 4, name: 'delete', resource: '/users/*', method: 'DELETE' },
+    { id: 7, name: 'red', resource: '/dashboard', method: 'GET' },
   ],
 };
 
@@ -68,18 +69,20 @@ const regularUserRole: Role = {
   ],
 };
 
-const user: User = {
+export const user: User = {
   id: 1,
   name: 'Alice',
   roles: [adminRole, regularUserRole],
 };
 
-const acl: AccessControl = new RBAC([adminRole, regularUserRole]);
+export const acl: AccessControl = new RBAC([adminRole, regularUserRole]);
 
-console.log(acl.canAccess(user, '/users', 'GET')); // true
-console.log(acl.canAccess(user, '/users', 'POST')); // true
-console.log(acl.canAccess(user, '/users/123', 'PUT')); // true
-console.log(acl.canAccess(user, '/users/123', 'DELETE')); // true
-console.log(acl.canAccess(user, '/profile', 'GET')); // true
-console.log(acl.canAccess(user, '/profile', 'PUT')); // true
-console.log(acl.canAccess(user, '/dashboard', 'GET')); // false
+function log() {
+  console.log(acl.canAccess(user, '/users', 'GET')); // true
+  console.log(acl.canAccess(user, '/users', 'POST')); // true
+  console.log(acl.canAccess(user, '/users/123', 'PUT')); // true
+  console.log(acl.canAccess(user, '/users/123', 'DELETE')); // true
+  console.log(acl.canAccess(user, '/profile', 'GET')); // true
+  console.log(acl.canAccess(user, '/profile', 'PUT')); // true
+  console.log(acl.canAccess(user, '/dashboard', 'GET')); // false
+}

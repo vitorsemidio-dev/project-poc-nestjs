@@ -10,11 +10,31 @@ interface Role {
   permissions: Permission[];
 }
 
-interface Permission {
+type PermissionProps = {
   id: number;
   name: string;
   resource: string;
+  resourceRegex?: RegExp;
   method: HttpMethod;
+};
+
+class Permission {
+  id: number;
+  name: string;
+  resource: string;
+  resourceRegex?: RegExp;
+  method: HttpMethod;
+
+  constructor(props: PermissionProps) {
+    Object.assign(this, props);
+  }
+
+  matches(resource: string, method: HttpMethod): boolean {
+    const isSameMethod = this.method === method;
+    const isMatchedResource =
+      this.resource === resource || this.resourceRegex?.test(resource);
+    return isSameMethod && isMatchedResource;
+  }
 }
 
 interface AccessControl {
@@ -52,11 +72,33 @@ const adminRole: Role = {
   id: 1,
   name: 'admin',
   permissions: [
-    { id: 1, name: 'create', resource: '/users', method: 'POST' },
-    { id: 2, name: 'read', resource: '/users', method: 'GET' },
-    { id: 3, name: 'update', resource: '/users/*', method: 'PUT' },
-    { id: 4, name: 'delete', resource: '/users/*', method: 'DELETE' },
-    { id: 7, name: 'red', resource: '/dashboard', method: 'GET' },
+    new Permission({
+      id: 1,
+      name: 'create',
+      resource: '/users',
+      method: 'POST',
+    }),
+    new Permission({ id: 2, name: 'read', resource: '/users', method: 'GET' }),
+    new Permission({
+      id: 3,
+      name: 'update',
+      resource: '/users/*',
+      resourceRegex: /^\/users($|\/.*)/,
+      method: 'PUT',
+    }),
+    new Permission({
+      id: 4,
+      name: 'delete',
+      resource: '/users/*',
+      resourceRegex: /^\/users($|\/.*)/,
+      method: 'DELETE',
+    }),
+    new Permission({
+      id: 7,
+      name: 'red',
+      resource: '/dashboard',
+      method: 'GET',
+    }),
   ],
 };
 
@@ -64,8 +106,18 @@ const regularUserRole: Role = {
   id: 2,
   name: 'regular user',
   permissions: [
-    { id: 5, name: 'read', resource: '/profile', method: 'GET' },
-    { id: 6, name: 'update', resource: '/profile', method: 'PUT' },
+    new Permission({
+      id: 5,
+      name: 'read',
+      resource: '/profile',
+      method: 'GET',
+    }),
+    new Permission({
+      id: 6,
+      name: 'update',
+      resource: '/profile',
+      method: 'PUT',
+    }),
   ],
 };
 

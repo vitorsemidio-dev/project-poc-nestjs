@@ -4,7 +4,7 @@ interface User {
   roles: Role[];
 }
 
-interface Role {
+export interface Role {
   id: number;
   name: string;
   permissions: Permission[];
@@ -43,7 +43,7 @@ interface AccessControl {
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-class RBAC implements AccessControl {
+export class RBAC implements AccessControl {
   private roles: Role[];
 
   constructor(roles: Role[]) {
@@ -66,7 +66,7 @@ class RBAC implements AccessControl {
   }
 }
 
-const PERMISSIONS: Record<string, Permission> = {
+export const PERMISSIONS: Record<string, Permission> = {
   createUsers: new Permission({
     id: 1,
     name: 'create',

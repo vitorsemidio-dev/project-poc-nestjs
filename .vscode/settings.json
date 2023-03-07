@@ -2,5 +2,25 @@
   "code-runner.executorMap": {
     "typescript": "npx ts-node --files --transpile-only"
   },
-  "material-icon-theme.activeIconPack": "nest"
+  "material-icon-theme.activeIconPack": "nest",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#e57cb2",
+    "activityBar.background": "#e57cb2",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#d0efaf",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#e57cb2",
+    "statusBar.background": "#dd5199",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#d22980",
+    "statusBarItem.remoteBackground": "#dd5199",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#dd5199",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#dd519999",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#DD5199"
 }

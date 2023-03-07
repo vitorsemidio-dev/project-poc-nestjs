@@ -1,4 +1,12 @@
-import { user, regularUser, acl, RBAC, Role, PERMISSIONS } from './acl';
+import {
+  acl,
+  IRole,
+  PERMISSIONS,
+  RBAC,
+  regularUser,
+  RoleFactory,
+  user,
+} from './acl';
 
 describe('ACL - user with roles [admin, regular user]', () => {
   it('should be able to allow access GET /users', async () => {
@@ -63,17 +71,25 @@ describe('ACL - user with roles [regular user]', () => {
 });
 
 describe('ACL - adding permissions to roles', () => {
-  it('should be able to add permission to read users', async () => {
-    const anyRole: Role = { id: 1, name: 'any', permissions: [] };
+  const makeSut = () => {
+    const anyRole: IRole = RoleFactory.create({
+      id: 1,
+      name: 'any',
+      permissions: [],
+    });
     const anyUser = { id: 1, name: 'any', roles: [anyRole] };
-    const aclReadUsers = new RBAC([anyRole]);
+    const acl = new RBAC([anyRole]);
+    return { anyRole, anyUser, acl };
+  };
+  it('should be able to add permission to read users', async () => {
+    const { anyRole, anyUser, acl: aclReadUsers } = makeSut();
 
     const outputWithoutPermission = aclReadUsers.canAccess(
       anyUser,
       '/users',
       'GET',
     );
-    anyRole.permissions.push(PERMISSIONS.readUsers);
+    anyRole.addPermission(PERMISSIONS.readUsers);
     const outputWithPermission = aclReadUsers.canAccess(
       anyUser,
       '/users',
@@ -85,16 +101,14 @@ describe('ACL - adding permissions to roles', () => {
   });
 
   it('should be able to add permission to delete users', async () => {
-    const anyRole: Role = { id: 1, name: 'any', permissions: [] };
-    const anyUser = { id: 1, name: 'any', roles: [anyRole] };
-    const aclDeleteUsers = new RBAC([anyRole]);
+    const { anyRole, anyUser, acl: aclDeleteUsers } = makeSut();
 
     const outputWithoutPermission = aclDeleteUsers.canAccess(
       anyUser,
       '/users/123',
       'DELETE',
     );
-    anyRole.permissions.push(PERMISSIONS.deleteUsers);
+    anyRole.addPermission(PERMISSIONS.deleteUsers);
     const outputWithPermission = aclDeleteUsers.canAccess(
       anyUser,
       '/users/123',
@@ -106,16 +120,14 @@ describe('ACL - adding permissions to roles', () => {
   });
 
   it('should be able to add permission to update users', async () => {
-    const anyRole: Role = { id: 1, name: 'any', permissions: [] };
-    const anyUser = { id: 1, name: 'any', roles: [anyRole] };
-    const aclUpdateUsers = new RBAC([anyRole]);
+    const { anyRole, anyUser, acl: aclUpdateUsers } = makeSut();
 
     const outputWithoutPermission = aclUpdateUsers.canAccess(
       anyUser,
       '/users/123',
       'PUT',
     );
-    anyRole.permissions.push(PERMISSIONS.updateUsers);
+    anyRole.addPermission(PERMISSIONS.updateUsers);
     const outputWithPermission = aclUpdateUsers.canAccess(
       anyUser,
       '/users/123',

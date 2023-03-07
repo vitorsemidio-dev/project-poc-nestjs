@@ -1,13 +1,67 @@
-interface User {
+export interface IUser {
   id: number;
   name: string;
-  roles: Role[];
+  roles: IRole[];
 }
 
-export interface Role {
+type UserProps = {
+  id: number;
+  name: string;
+  roles: IRole[];
+};
+
+export class User implements IUser {
+  id: number;
+  name: string;
+  roles: IRole[];
+
+  constructor(props: UserProps) {
+    Object.assign(this, props);
+  }
+}
+
+export class UserFactory {
+  static create(props: UserProps): IUser {
+    return new User(props);
+  }
+}
+
+export interface IRole {
   id: number;
   name: string;
   permissions: Permission[];
+  addPermission(permission: Permission): void;
+  removePermission(permission: Permission): void;
+}
+
+type RoleProps = {
+  id: number;
+  name: string;
+  permissions: Permission[];
+};
+
+export class Role implements IRole {
+  id: number;
+  name: string;
+  permissions: Permission[];
+
+  constructor(props: RoleProps) {
+    Object.assign(this, props);
+  }
+
+  addPermission(permission: Permission): void {
+    this.permissions.push(permission);
+  }
+
+  removePermission(permission: Permission): void {
+    this.permissions = this.permissions.filter((p) => p.id !== permission.id);
+  }
+}
+
+export class RoleFactory {
+  static create(props: RoleProps): IRole {
+    return new Role(props);
+  }
 }
 
 type PermissionProps = {
@@ -18,7 +72,14 @@ type PermissionProps = {
   method: HttpMethod;
 };
 
-class Permission {
+interface IPermission {
+  id: number;
+  name: string;
+  resource: string;
+  matches(resource: string, method: HttpMethod): boolean;
+}
+
+export class Permission implements IPermission {
   id: number;
   name: string;
   resource: string;
@@ -37,20 +98,26 @@ class Permission {
   }
 }
 
+export class PermissionFactory {
+  static create(props: PermissionProps): IPermission {
+    return new Permission(props);
+  }
+}
+
 interface AccessControl {
-  canAccess(user: User, resource: string, method: HttpMethod): boolean;
+  canAccess(user: IUser, resource: string, method: HttpMethod): boolean;
 }
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export class RBAC implements AccessControl {
-  private roles: Role[];
+  private roles: IRole[];
 
-  constructor(roles: Role[]) {
+  constructor(roles: IRole[]) {
     this.roles = roles;
   }
 
-  canAccess(user: User, resource: string, method: HttpMethod): boolean {
+  canAccess(user: IUser, resource: string, method: HttpMethod): boolean {
     // Find all the roles that the user has
     const userRoles = user.roles.map((role) => role.id);
 
@@ -114,7 +181,7 @@ export const PERMISSIONS: Record<string, Permission> = {
 };
 
 // Example usage
-const adminRole: Role = {
+const adminRole: IRole = new Role({
   id: 1,
   name: 'admin',
   permissions: [
@@ -124,34 +191,24 @@ const adminRole: Role = {
     PERMISSIONS.deleteUsers,
     PERMISSIONS.readDashboard,
   ],
-};
+});
 
-const regularUserRole: Role = {
+const regularUserRole: IRole = new Role({
   id: 2,
   name: 'regular user',
   permissions: [PERMISSIONS.readProfile, PERMISSIONS.updateProfile],
-};
+});
 
-export const user: User = {
+export const user: IUser = {
   id: 1,
   name: 'Alice',
   roles: [adminRole, regularUserRole],
 };
 
-export const regularUser: User = {
+export const regularUser: IUser = {
   id: 2,
   name: 'Asuna',
   roles: [regularUserRole],
 };
 
 export const acl: AccessControl = new RBAC([adminRole, regularUserRole]);
-
-function log() {
-  console.log(acl.canAccess(user, '/users', 'GET')); // true
-  console.log(acl.canAccess(user, '/users', 'POST')); // true
-  console.log(acl.canAccess(user, '/users/123', 'PUT')); // true
-  console.log(acl.canAccess(user, '/users/123', 'DELETE')); // true
-  console.log(acl.canAccess(user, '/profile', 'GET')); // true
-  console.log(acl.canAccess(user, '/profile', 'PUT')); // true
-  console.log(acl.canAccess(user, '/dashboard', 'GET')); // false
-}

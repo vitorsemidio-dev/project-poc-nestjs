@@ -138,3 +138,126 @@ describe('ACL - adding permissions to roles', () => {
     expect(outputWithPermission).toBe(true);
   });
 });
+
+describe('ACL - removing permissions to roles', () => {
+  const makeSut = () => {
+    const roleWithPermissions: IRole = RoleFactory.create({
+      id: 1,
+      name: 'any',
+      permissions: [
+        PERMISSIONS.readUsers,
+        PERMISSIONS.deleteUsers,
+        PERMISSIONS.updateUsers,
+      ],
+    });
+    const userWithRoles = { id: 1, name: 'any', roles: [roleWithPermissions] };
+    const aclWithPermissions = new RBAC([roleWithPermissions]);
+    return {
+      roleWithPermissions,
+      userWithRoles: userWithRoles,
+      aclWithPermissions,
+    };
+  };
+  it('should be able to remove "read users" permission from role', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    const outputBefore = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users',
+      'GET',
+    );
+    roleWithPermissions.removePermission(PERMISSIONS.readUsers);
+    const outputAfter = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users',
+      'GET',
+    );
+
+    expect(outputBefore).toBe(true);
+    expect(outputAfter).toBe(false);
+  });
+
+  it('should be able to remove "delete users" permission from role', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    const outputBefore = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'DELETE',
+    );
+    roleWithPermissions.removePermission(PERMISSIONS.deleteUsers);
+    const outputAfter = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'DELETE',
+    );
+
+    expect(outputBefore).toBe(true);
+    expect(outputAfter).toBe(false);
+  });
+
+  it('should be able to remove "update users" permission from role', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    const outputBefore = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+    roleWithPermissions.removePermission(PERMISSIONS.updateUsers);
+    const outputAfter = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+
+    expect(outputBefore).toBe(true);
+    expect(outputAfter).toBe(false);
+  });
+
+  it('should be able to remove all permissions from role', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    roleWithPermissions.removePermission(PERMISSIONS.updateUsers);
+    roleWithPermissions.removePermission(PERMISSIONS.readUsers);
+    roleWithPermissions.removePermission(PERMISSIONS.deleteUsers);
+    const outputWithoutUpdatePermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+    const outputWithoutDeletePermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+    const outputWithoutReadPermission = aclWithPermissions.canAccess(
+      userWithRoles,
+      '/users/123',
+      'PUT',
+    );
+
+    expect(outputWithoutUpdatePermission).toBe(false);
+    expect(outputWithoutDeletePermission).toBe(false);
+    expect(outputWithoutReadPermission).toBe(false);
+    expect(roleWithPermissions.permissions.length).toBe(0);
+  });
+
+  it('should not throw when try remove inexistent permission ', async () => {
+    const { roleWithPermissions, userWithRoles, aclWithPermissions } =
+      makeSut();
+
+    const outputBeforeRemoveReadDashboardPermission =
+      aclWithPermissions.canAccess(userWithRoles, '/dashboard', 'GET');
+    roleWithPermissions.removePermission(PERMISSIONS.readDashboard);
+    const outputAfterRemoveReadDashboardPermission =
+      aclWithPermissions.canAccess(userWithRoles, '/dashboard', 'GET');
+
+    expect(outputBeforeRemoveReadDashboardPermission).toBe(false);
+    expect(outputAfterRemoveReadDashboardPermission).toBe(false);
+  });
+});

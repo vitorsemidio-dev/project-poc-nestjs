@@ -60,9 +60,8 @@ class RBAC implements AccessControl {
       .flatMap((role) => role.permissions);
 
     // Check if any of those permissions match the resource and method
-    return userPermissions.some(
-      (permission) =>
-        permission.resource === resource && permission.method === method,
+    return userPermissions.some((permission) =>
+      permission.matches(resource, method),
     );
   }
 }
@@ -125,6 +124,12 @@ export const user: User = {
   id: 1,
   name: 'Alice',
   roles: [adminRole, regularUserRole],
+};
+
+export const regularUser: User = {
+  id: 2,
+  name: 'Asuna',
+  roles: [regularUserRole],
 };
 
 export const acl: AccessControl = new RBAC([adminRole, regularUserRole]);

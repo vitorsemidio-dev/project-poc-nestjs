@@ -66,58 +66,70 @@ class RBAC implements AccessControl {
   }
 }
 
+const PERMISSIONS: Record<string, Permission> = {
+  createUsers: new Permission({
+    id: 1,
+    name: 'create',
+    resource: '/users',
+    method: 'POST',
+  }),
+  readUsers: new Permission({
+    id: 2,
+    name: 'read',
+    resource: '/users',
+    method: 'GET',
+  }),
+  updateUsers: new Permission({
+    id: 3,
+    name: 'update',
+    resource: '/users/*',
+    resourceRegex: /^\/users($|\/.*)/,
+    method: 'PUT',
+  }),
+  deleteUsers: new Permission({
+    id: 4,
+    name: 'delete',
+    resource: '/users/*',
+    resourceRegex: /^\/users($|\/.*)/,
+    method: 'DELETE',
+  }),
+  readProfile: new Permission({
+    id: 5,
+    name: 'read',
+    resource: '/profile',
+    method: 'GET',
+  }),
+  updateProfile: new Permission({
+    id: 6,
+    name: 'update',
+    resource: '/profile',
+    method: 'PUT',
+  }),
+  readDashboard: new Permission({
+    id: 7,
+    name: 'read',
+    resource: '/dashboard',
+    method: 'GET',
+  }),
+};
+
 // Example usage
 const adminRole: Role = {
   id: 1,
   name: 'admin',
   permissions: [
-    new Permission({
-      id: 1,
-      name: 'create',
-      resource: '/users',
-      method: 'POST',
-    }),
-    new Permission({ id: 2, name: 'read', resource: '/users', method: 'GET' }),
-    new Permission({
-      id: 3,
-      name: 'update',
-      resource: '/users/*',
-      resourceRegex: /^\/users($|\/.*)/,
-      method: 'PUT',
-    }),
-    new Permission({
-      id: 4,
-      name: 'delete',
-      resource: '/users/*',
-      resourceRegex: /^\/users($|\/.*)/,
-      method: 'DELETE',
-    }),
-    new Permission({
-      id: 7,
-      name: 'red',
-      resource: '/dashboard',
-      method: 'GET',
-    }),
+    PERMISSIONS.createUsers,
+    PERMISSIONS.readUsers,
+    PERMISSIONS.updateUsers,
+    PERMISSIONS.deleteUsers,
+    PERMISSIONS.readDashboard,
   ],
 };
 
 const regularUserRole: Role = {
   id: 2,
   name: 'regular user',
-  permissions: [
-    new Permission({
-      id: 5,
-      name: 'read',
-      resource: '/profile',
-      method: 'GET',
-    }),
-    new Permission({
-      id: 6,
-      name: 'update',
-      resource: '/profile',
-      method: 'PUT',
-    }),
-  ],
+  permissions: [PERMISSIONS.readProfile, PERMISSIONS.updateProfile],
 };
 
 export const user: User = {

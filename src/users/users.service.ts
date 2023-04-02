@@ -17,11 +17,14 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      relations: ['roles'],
+    });
   }
 
   findOne(id: number) {
     return this.userRepository.findOne({
+      relations: ['roles'],
       where: { id },
     });
   }

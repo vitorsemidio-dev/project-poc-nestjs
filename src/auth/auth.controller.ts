@@ -7,6 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public.decorator';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { CredentialsDto } from './credentials.dto';
@@ -25,5 +26,18 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return this.authService.profile(req.user.sub);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('private')
+  privateRoute(@Request() req) {
+    return [];
+  }
+
+  @Public()
+  @UseGuards(AuthGuard)
+  @Get('public')
+  publicRoute(@Request() req) {
+    return [];
   }
 }

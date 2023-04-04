@@ -1,6 +1,7 @@
 import {
   Body,
   CacheInterceptor,
+  CacheTTL,
   Controller,
   Get,
   Post,
@@ -19,6 +20,7 @@ export class CacheManagerController {
     return this.cacheManagerService.createUserCache(body);
   }
 
+  @CacheTTL(60)
   @Get('cache-user')
   async listUserCache() {
     console.log('creating user');

@@ -17,6 +17,7 @@ export class CacheManagerService {
   }
 
   async listUserCache() {
+    this.logger.log('listing user cache');
     const users = (await this.cacheManager.get<string[]>('users')) ?? [];
     return users;
   }

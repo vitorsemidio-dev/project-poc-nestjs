@@ -1,8 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { UserCreatedEvent } from './events/user-created.event';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { UserCreatedEvent } from 'src/events/user-created.event';
 
 @Injectable()
 export class AppService {
@@ -14,7 +13,7 @@ export class AppService {
     private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  getHello(): string {
+  async getHello(): Promise<string> {
     return 'Hello World!';
   }
 
@@ -51,7 +50,7 @@ export class AppService {
     this.logger.log('gift sent to user', payload.email);
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS, { name: 'delete-users' })
+  @Cron(CronExpression.EVERY_10_HOURS, { name: 'delete-users' })
   async cron() {
     const date = new Date();
     this.logger.log('deleting all users', this.formatDatePtBr(date));

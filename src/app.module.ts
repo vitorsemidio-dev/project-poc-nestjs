@@ -1,17 +1,23 @@
-import { Module } from '@nestjs/common';
+import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { CacheManagerController } from 'src/cache/cache-manager.controller';
+import { CacheManagerService } from 'src/cache/cache-manager.service';
 import { databaseConfig } from 'src/configs/database.config';
 import { PokemonModule } from 'src/pokemon/pokemon.module';
+import { RolesModule } from 'src/roles/roles.module';
 import { UsersModule } from 'src/users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       ...databaseConfig,
     }),
@@ -22,7 +28,14 @@ import { RolesModule } from './roles/roles.module';
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, CacheManagerController],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+    CacheManagerService,
+  ],
 })
 export class AppModule {}
